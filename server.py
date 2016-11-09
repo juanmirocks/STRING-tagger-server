@@ -16,8 +16,6 @@ from flask import Markup
 
 from tagger import Tagger
 
-#app = Flask(__name__)
-
 class MiniJSONEncoder(JSONEncoder):
     """Minify JSON output."""
     item_separator = ','
@@ -25,10 +23,6 @@ class MiniJSONEncoder(JSONEncoder):
 
 app = Flask(__name__)
 
-#with app.app_context():
-    # within this block, current_app points to app.
-#    annotate("1", "shpendm")
-#    print current_app.name
 app.json_encoder = MiniJSONEncoder
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
 
@@ -146,7 +140,7 @@ def annotate(entity_types, text=None): #(): #(entity_types, text=None):
     """
 
     text = "shpendmahmuti" #text = 13 chars
-    entity_types = "2, -10, -111"  #type=-1, id=123  (type: if one number is on the document, then it tags it
+    entity_types = "2, -10, -111"  #type=-1, id=123  (type: if one number is on the document, then it tags it)
 
     if text is None:
         text = request.args.get('text')
@@ -167,7 +161,7 @@ def annotate(entity_types, text=None): #(): #(entity_types, text=None):
         else:
             raise
 
-    return json #"It is working!"
+    return json #test : "It is working!"
 
 # -----------------------------------------------------------------------------------
 
