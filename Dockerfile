@@ -1,9 +1,8 @@
-# Base container with tools dependencies for the Reflect project
+# Base container while inheriting work from larsjuhljensen/tagger
 #
 # VERSION       1
 
 FROM larsjuhljensen/tagger
-#FROM alpine:3.1
 MAINTAINER shpendmahmuti@gmail.com
 
 RUN yum -y update && \
