@@ -9,10 +9,15 @@ Here we are trying to develop a way to use tagging through the web. The idea is 
  4. Copied a new server.py and Makefile in the right directory
  5. Do the tests and check the results
 
-* Modifying the work so that all the parameters can be given directly through the web (still working):
+* Modifying the work so that all the parameters can be given directly through the web (still working - not functional):
  1. Create correct forms and re-directing
  2. Validate the inputs
  3. Validate the outputs and maybe put the output in a separate file
+ 
+ * Added unit tests and changed the way the queries are done:
+ 1. Specify in the link what you want tagged
+ 2. Validate the inputs in tests
+ 3. Automated tests can be run in order to stabilize the software against failures when changing methods
 
 
 * Required to run the software:
@@ -25,7 +30,8 @@ Here we are trying to develop a way to use tagging through the web. The idea is 
  2. Run: ``` $ docker run -p 5000:5000 tagger ```
  3. Go to a browser and try:  
  ``` http://localhost:5000/ ```  (in development)  
- ``` http://localhost:5000/annotate/1 ```  (check a simple result)
+ ``` localhost:5000/annotate?entity_types=-111&text=shpendm ```  (check this result or try different arguments)
  4. Optional: ``` docker run -ti --entrypoint bash tagger ```  
  Check the files/folders of the image inside: ``` ls ```  
  Check the content inside the files/folders of the image: ``` vim [filename] ```
+ 5. Go to Dockerfile and change ENTRYPOINT to testServer.py in order to run the tests
