@@ -41,10 +41,10 @@ def matches_to_simple_json(matches):
 def annotate(entity_types=None, text=None):
     print request.args.get('entity_types') #example "-111" or "-111,2,15" etc (numbers)
     print request.args.get('text') #example "shpendm", "shpen-dm", "SHpend-m", "-shpend-m", ".SH-pendm" etc.  ("sh.pendm", "shpendm-" shpendmm" return empty result)
-   
+
     # basically anything separated by a space before or after the correct text is tagged and the position is noted
     # example: sadasd.-SHp-endm%20eshte is tagged. the result is: {"entities":[{"end":16,"entities":[{"id":"123","type":-111}],"start":8}]}
-    #test case: http://localhost:5000/annotate?entity_types=10090,9606,1856129&text=p53%20dhe%20.p53%20dhe%20P53.1%20dhe%20P5-3%20dhe%20-p53%20and%20nucleus%20and%20human 
+    #test case: http://localhost:5000/annotate?entity_types=10090,9606,1856129&text=p53%20dhe%20.p53%20dhe%20P53.1%20dhe%20P5-3%20dhe%20-p53%20and%20nucleus%20and%20human
     text = request.args.get('text')
     entity_types = request.args.get('entity_types')
     text = str(text)
@@ -79,5 +79,5 @@ if __name__ == '__main__':
     if args.port == None:
         print "Missing required argument: -p/--port"
         sys.exit(1)
-    
+
     app.run(host='0.0.0.0', port=int(args.port), debug=False)

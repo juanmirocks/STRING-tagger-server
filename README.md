@@ -6,15 +6,20 @@ Here we are trying to develop a way to use tagging through the REST API. The ide
 # Running
 
 0. Clone this repository
-0. Build: ``` $ docker build -t tagger . ```
-0. Run: ``` $ docker run -p 5000:5000 tagger ```
+0. Build: `docker build -t tagger .`
+0. Run: `docker run -p 5000:5000 tagger`
+0. Or run with your own dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
 0. Go to a browser and try:
 
-```
- localhost:5000/annotate?entity_types=-111&text=shpendm is a person's name
+```shell
+localhost:5000/annotate?entity_types=-3,-22&text=proline rich domain important for the apoptotic activity of p53 human protein by nuclear exportation via MAPK human
 ```
 
 # Testing
+
+```
+localhost:5000/annotate?entity_types=-111&text=shpendm is a person's name
+```
 
 ```shell
 docker run -p 5000:5000 --entrypoint "python /app/tagger/testServer.py" tagger

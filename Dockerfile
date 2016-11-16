@@ -12,7 +12,6 @@ RUN yum -y update && \
 
 RUN yum -y install epel-release && yum clean all
 RUN yum -y install python-pip && yum clean all
-RUN yum -y install make
 
 WORKDIR /app/tagger/
 
@@ -20,22 +19,16 @@ WORKDIR /app/tagger/
 COPY requirements.txt /app/tagger/.
 RUN pip install -r /app/tagger/requirements.txt
 
-ENV APP="/tagger"
 ENV DICS_NAME="tagger_dictionary.tar.gz"
 ENV DICS_URL="http://download.jensenlab.org/$DICS_NAME"
-ENV DICS_DIR="/tagger/dics/"
+ENV DICS_DIR="/app/tagger/dics/"
 
-
-RUN mkdir -p /app/tagger/dics/
+RUN mkdir -p ${DICS_DIR}
 RUN wget ${DICS_URL}
 RUN tar xvzf ${DICS_NAME} -C dics/
 
-
-COPY server.py /app/tagger/server.py
-COPY testServer.py /app/tagger/testServer.py
-
-WORKDIR /app/tagger
-RUN make
+COPY server.py ${WORKDIR}
+COPY testServer.py ${WORKDIR}
 
 EXPOSE 5000
 ENTRYPOINT ["python", "/app/tagger/server.py"]
