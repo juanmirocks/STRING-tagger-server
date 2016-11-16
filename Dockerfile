@@ -11,7 +11,7 @@ RUN yum -y update && \
 	yum clean all
 
 RUN yum -y install epel-release && yum clean all
-RUN yum -y install python-pip && yum clean all 
+RUN yum -y install python-pip && yum clean all
 RUN yum -y install make
 
 WORKDIR /app/tagger/
@@ -38,5 +38,4 @@ WORKDIR /app/tagger
 RUN make
 
 EXPOSE 5000
-#ENTRYPOINT ["python", "/app/tagger/server.py", "-p 5000"]
-ENTRYPOINT ["python", "/app/tagger/testServer.py"]
+ENTRYPOINT ["python", "/app/tagger/server.py"]
