@@ -9,6 +9,8 @@ from flask.json import JSONEncoder
 import optparse
 import time
 import sys, getopt, io
+import pandas as pd
+from collections import OrderedDict
 
 from tagger import Tagger
 
@@ -34,6 +36,82 @@ def matches_to_simple_json(matches):
     """
 
     return {'entities': [{'start': x[0], 'end': x[1]+1, 'entities': [{'type': e[0], 'id': e[1]} for e in x[2]]} for x in matches]}
+
+# -----------------------------------------------------------------------------------
+
+# Read names from uniprot files
+def tsvFilesList():
+    filesList = []
+    for filename in os.listdir('/app/tagger/uniprot'):
+        if filename.endswith(".tsv"):
+            filesList.append(filename)
+            continue
+        else:
+            continue
+    return filesList
+
+# test json samples
+json1 = '{"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606},{"id":"ENSMUSP00000029699","type":10090}]}'
+json2 = '{"entities":[{"end":3,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":0},{"end":7,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":4},{"end":12,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":9},{"end":16,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":13},{"end":20,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":17},{"end":26,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":23},{"end":31,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":27},{"end":35,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":32},{"end":40,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":37}]}'
+json3 = '{"entities":[{"end":183,"entities":[{"id":"ENSP00000358525","type":9606}],"start":180},{"end":188,"entities":[{"id":"ENSP00000431418","type":9606}],"start":184},{"end":252,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":247},{"end":350,"entities":[{"id":"ENSP00000358525","type":9606}],"start":331},{"end":355,"entities":[{"id":"ENSP00000358525","type":9606}],"start":352},{"end":412,"entities":[{"id":"ENSP00000431418","type":9606}],"start":384},{"end":418,"entities":[{"id":"ENSP00000431418","type":9606}],"start":414},{"end":549,"entities":[{"id":"ENSP00000358525","type":9606}],"start":546},{"end":554,"entities":[{"id":"ENSP00000431418","type":9606}],"start":550},{"end":780,"entities":[{"id":"ENSP00000358525","type":9606}],"start":777},{"end":796,"entities":[{"id":"ENSP00000431418","type":9606}],"start":792},{"end":821,"entities":[{"id":"ENSP00000358525","type":9606}],"start":818},{"end":839,"entities":[{"id":"ENSP00000431418","type":9606}],"start":835},{"end":878,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":873},{"end":999,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":994},{"end":1013,"entities":[{"id":"ENSP00000431418","type":9606}],"start":1009},{"end":1106,"entities":[{"id":"ENSMUSP00000101471","type":10090},{"id":"ENSP00000363763","type":9606},{"id":"ENSMUSP00000023462","type":10090},{"id":"ENSP00000215832","type":9606}],"start":1103},{"end":1149,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":1144},{"end":1228,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":1223},{"end":1239,"entities":[{"id":"ENSP00000358525","type":9606}],"start":1236},{"end":1244,"entities":[{"id":"ENSP00000431418","type":9606}],"start":1240}]}\n'
+
+# -----------------------------------------------------------------------------------
+
+# convert StringID to UniprotID
+def stringIDtoUniprotID(values):
+    # find all IDs and types corresponding to them
+    def find_values(id, json_repr):
+        results = []
+        def _decode_dict(a_dict):
+            try: results.append(a_dict[id])
+            except KeyError: pass
+            return a_dict
+
+        json.loads(json_repr, object_hook=_decode_dict)
+        return results
+
+
+    # format ids and types in a dictionary format
+    def jsonIDsAndTypes(jsonText):
+        #find all occurrences of ids and types
+        ids = find_values('id', jsonText)
+        types = find_values('type', jsonText)
+
+        # create a ordered dictionary with ids and types
+        new_dict = OrderedDict(zip(ids, types))
+        return(new_dict)
+
+
+    # dictionary of common organisms
+    #dict = {'10090': 'mouse', '7955': 'else0', '9060': 'human', '3702':'else1', '4896':'else2', '4932':'else3', '511145':'else4', '6239':'else5', '7227':'else6'}
+
+
+    # find conversion of StringID to UniprotID
+    def StrToUni(strId, entity):
+        lookup = strId
+        indx = None
+        with open(entity) as tsvFile:
+            for num, line in enumerate(tsvFile, -1):
+                if lookup in line:
+                    indx = num
+        df = pd.read_csv(entity, sep='\t')
+        df = df.rename(columns={'#species   uniprot_ac|uniprot_id   string_id   identity   bit_score': 'col'})
+        return(str(df.iloc[[indx]]).split()[1 + 1])
+
+    # loop through all occurrences of ids for each type
+    for i in range(0,(len(jsonIDsAndTypes(values).keys()))):
+        # get the complete filename that contains the type_name
+        matching = [s for s in tsvFilesList() if str(list(jsonIDsAndTypes(values).values())[i]) in s]
+        # find replacements of stringID with uniprotId in tsv
+        StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\''))
+        # change values of json object
+        values = values.replace(str(list(jsonIDsAndTypes(values).keys())[i]),
+                             StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\'')))
+
+    return(values)
+
+# test example
+#print(stringIDtoUniprotID(json3))
 
 # -----------------------------------------------------------------------------------
 
@@ -70,7 +148,7 @@ def annotate(entity_types=None, text=None):
         else:
             raise
 
-    return json
+    return stringIDtoUniprotID(json)
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(usage="python server.py -p ")
