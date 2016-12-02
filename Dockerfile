@@ -30,5 +30,12 @@ RUN tar xvzf ${DICS_NAME} -C dics/
 COPY server.py ${WORKDIR}
 COPY testServer.py ${WORKDIR}
 
+# download all directories for uniprot id mapping
+RUN mkdir -p /app/tagger/uniprot/
+WORKDIR /app/tagger/uniprot
+RUN wget -r -np -nd -l 1 -A tsv.gz http://www.string-db.org/mapping_files/uniprot_mappings/
+RUN gunzip *.gz
+RUN rm -rf robots.txt
+
 EXPOSE 5000
 ENTRYPOINT ["python", "/app/tagger/server.py"]
