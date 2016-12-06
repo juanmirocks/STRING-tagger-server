@@ -12,13 +12,13 @@ Here we are trying to develop a way to use tagging through the REST API. The ide
 0. Go to a browser and try:
 
 ```shell
-localhost:5000/annotate?entity_types=-3,-22&text=proline rich domain important for the apoptotic activity of p53 human protein by nuclear exportation via MAPK human
+localhost:5000/annotate?text=proline rich domain important for the apoptotic activity of p53 human protein by nuclear exportation via MAPK human
 ```
 
 # Testing
 
 ```
-localhost:5000/annotate?entity_types=-111&text=shpendm is a person's name
+http://localhost:5000/annotate?text=p53%20human%20mouse%20human%20tp53
 ```
 
 ```shell
