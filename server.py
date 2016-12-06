@@ -10,6 +10,7 @@ import optparse
 import time
 import sys, getopt, io
 import pandas as pd
+import json
 from collections import OrderedDict
 
 from tagger import Tagger
@@ -30,7 +31,6 @@ tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv") #worm_ent
 def matches_to_simple_json(matches):
     """
     Example
-
     in: [(0, 5, ((1, '1'),))]
     out: {"entities": [{"end": 7, "entities": [{"id": "shpendmahmuti", "type": 1}], "start": 0}]}
     """
@@ -42,7 +42,7 @@ def matches_to_simple_json(matches):
 # Read names from uniprot files
 def tsvFilesList():
     filesList = []
-    for filename in os.listdir('/app/tagger/uniprot'):
+    for filename in os.listdir('/app/tagger'): #/uniprot
         if filename.endswith(".tsv"):
             filesList.append(filename)
             continue
@@ -74,11 +74,14 @@ def stringIDtoUniprotID(values):
     # format ids and types in a dictionary format
     def jsonIDsAndTypes(jsonText):
         #find all occurrences of ids and types
-        ids = find_values('id', jsonText)
-        types = find_values('type', jsonText)
+        ids1 = find_values('id', jsonText)
+        types1 = find_values('type', jsonText)
+
+        types = [item for item in types1 if item != -3]
+        ids = [x for x in ids1 if not (x.isdigit() or x[0] == '-' and x[1:].isdigit())]
 
         # create a ordered dictionary with ids and types
-        new_dict = OrderedDict(zip(ids, types))
+        new_dict = OrderedDict(zip(ids, types)) #new_dict = OrderedDict(zip(ids, types))
         return(new_dict)
 
 
@@ -117,16 +120,13 @@ def stringIDtoUniprotID(values):
 
 @app.route('/annotate', methods=['GET', 'POST'])
 def annotate(entity_types=None, text=None):
-    print request.args.get('entity_types') #example "-111" or "-111,2,15" etc (numbers)
     print request.args.get('text') #example "shpendm", "shpen-dm", "SHpend-m", "-shpend-m", ".SH-pendm" etc.  ("sh.pendm", "shpendm-" shpendmm" return empty result)
 
     # basically anything separated by a space before or after the correct text is tagged and the position is noted
     # example: sadasd.-SHp-endm%20eshte is tagged. the result is: {"entities":[{"end":16,"entities":[{"id":"123","type":-111}],"start":8}]}
-    #test case: http://localhost:5000/annotate?entity_types=10090,9606,1856129&text=p53%20dhe%20.p53%20dhe%20P53.1%20dhe%20P5-3%20dhe%20-p53%20and%20nucleus%20and%20human
+    #test case: http://localhost:5000/annotate?text=p53%20human%20mouse%20human%20tp53
     text = request.args.get('text')
-    entity_types = request.args.get('entity_types')
     text = str(text)
-    entity_types = str(entity_types)
 
     if text is None:
         text = request.args.get('text')
@@ -134,21 +134,30 @@ def annotate(entity_types=None, text=None):
         text = request.form['text']
 
     document_id_stub = 1
+    entity_types="-3,-22,9606"
     entity_types = set([int(x) for x in entity_types.split(",")])
 
     matches = tagger.get_matches(text, document_id_stub, entity_types, auto_detect=True, protect_tags=False)
-    json = matches_to_simple_json(matches)
-
+    #print matches
+    jsonOut = matches_to_simple_json(matches)
+    #jsonOut ='{"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606},{"id":"ENSMUSP00000029699","type":10090}]}'
+    #print type(jsonOut)
+    jsonOut = json.dumps(jsonOut)
+    jsonOut = jsonOut.replace("'",'"')
+    jsonOut = stringIDtoUniprotID(jsonOut)
+    jsonOut = json.loads(jsonOut)
+    #print js
     try:
-        json = flask.jsonify(json)
-	json.status_code = 200
+        jsonOut = flask.jsonify(jsonOut)
+	jsonOut.status_code = 200
     except RuntimeError as e:
         if str(e) == 'working outside of application context':
             pass
         else:
             raise
-
-    return stringIDtoUniprotID(json)
+    #print stringIDtoUniprotID(json1)
+    print str(jsonOut)
+    return jsonOut #JSONEncoder().encode(jsonOut) #str(jsonOut)  #json.loads(stringIDtoUniprotID(json.dumps(json1))) #stringIDtoUniprotID(json1) #json.loads(stringIDtoUniprotID(jsonOut))
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(usage="python server.py -p ")
