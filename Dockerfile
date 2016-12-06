@@ -18,6 +18,7 @@ WORKDIR /app/tagger/
 # pip install app requirements
 COPY requirements.txt /app/tagger/.
 RUN pip install -r /app/tagger/requirements.txt
+RUN pip install pandas
 
 ENV DICS_NAME="tagger_dictionary.tar.gz"
 ENV DICS_URL="http://download.jensenlab.org/$DICS_NAME"
@@ -31,11 +32,14 @@ COPY server.py ${WORKDIR}
 COPY testServer.py ${WORKDIR}
 
 # download all directories for uniprot id mapping
-RUN mkdir -p /app/tagger/uniprot/
-WORKDIR /app/tagger/uniprot
+#RUN mkdir -p /app/tagger/uniprot/
+WORKDIR /app/tagger/
 RUN wget -r -np -nd -l 1 -A tsv.gz http://www.string-db.org/mapping_files/uniprot_mappings/
 RUN gunzip *.gz
 RUN rm -rf robots.txt
 
+WORKDIR /app/tagger/
+
 EXPOSE 5000
-ENTRYPOINT ["python", "/app/tagger/server.py"]
+ENTRYPOINT ["python", "/app/tagger/server.py", "-p 5000"]
+#ENTRYPOINT ["python", "/app/tagger/testServer.py"]
