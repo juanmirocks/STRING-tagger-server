@@ -12,6 +12,7 @@ import sys, getopt, io
 import pandas as pd
 import json
 from collections import OrderedDict
+import re
 
 from tagger import Tagger
 
@@ -29,13 +30,18 @@ tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv") #worm_ent
 # -----------------------------------------------------------------------------------
 
 def matches_to_simple_json(matches):
-    """
-    Example
-    in: [(0, 5, ((1, '1'),))]
-    out: {"entities": [{"end": 7, "entities": [{"id": "shpendmahmuti", "type": 1}], "start": 0}]}
-    """
+    aList = list()
+    for a in matches:
+        for e in a[2]:
+            if(e[0]==-3):
+                resp = [{'type': e[0], 'id': e[1]}]
+            else:
+                resp = [{'id': e[1], 'type': e[0]}, {'id2': 'toreplace'+e[1],'type2':'uniprot:' + str(e[0])}]
+            createMatching = {'start': a[0], 'end': a[1] + 1, 'normalizations': resp}
+        aList.append(createMatching)
 
-    return {'entities': [{'start': x[0], 'end': x[1]+1, 'entities': [{'type': e[0], 'id': e[1]} for e in x[2]]} for x in matches]}
+    out = {'entities': aList}
+    return out
 
 # -----------------------------------------------------------------------------------
 
@@ -108,9 +114,11 @@ def stringIDtoUniprotID(values):
         # find replacements of stringID with uniprotId in tsv
         StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\''))
         # change values of json object
-        values = values.replace(str(list(jsonIDsAndTypes(values).keys())[i]),
+        values = values.replace('toreplace'+str(list(jsonIDsAndTypes(values).keys())[i]),
                              StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\'')))
 
+    values = re.sub("id2", "id", values)
+    values = re.sub("type2", "type", values)
     return(values)
 
 # test example
@@ -134,11 +142,11 @@ def annotate(entity_types=None, text=None):
         text = request.form['text']
 
     document_id_stub = 1
-    entity_types="-3,-22,9606"
+    entity_types="-22,9606" #-3,-22,9606
     entity_types = set([int(x) for x in entity_types.split(",")])
 
     matches = tagger.get_matches(text, document_id_stub, entity_types, auto_detect=True, protect_tags=False)
-    #print matches
+    print matches
     jsonOut = matches_to_simple_json(matches)
     #jsonOut ='{"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606},{"id":"ENSMUSP00000029699","type":10090}]}'
     #print type(jsonOut)
