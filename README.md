@@ -9,20 +9,20 @@ Here we are trying to develop a way to use tagging through the REST API. The ide
 0. Build: `docker build -t tagger .`
 0. Run: `docker run -p 5000:5000 tagger`
 0. Or run with your own dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
-0. Go to a browser and try:
+
+# Testing for text
+
+```
+curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio  or danio rerio have aldh9a1a and ab-cb8"}'
+
+```
+# Running tests
 
 ```shell
-localhost:5000/annotate?text=proline rich domain important for the apoptotic activity of p53 human protein by nuclear exportation via MAPK human
-```
+docker run -p 5000:5000 --entrypoint bash tagger
 
-# Testing
+# python testServer.py 
 
-```
-http://localhost:5000/annotate?text=p53%20human%20mouse%20human%20tp53
-```
-
-```shell
-docker run -p 5000:5000 --entrypoint "python /app/tagger/testServer.py" tagger
 ```
 
 # Development
