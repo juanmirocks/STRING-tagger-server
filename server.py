@@ -21,7 +21,8 @@ app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
 
 tagger = Tagger()
-#tagger.add_name("p511", "-12", "1234")  # stub when testing
+tagger.add_name("shpendm", "-111", "123")  # stub when testing
+tagger.add_name("p511", "-12", "1234")  # stub when testing
 tagger.load_global("dics/tagger_global.tsv") #tagger_global  #dics/worm_global
 tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv") #worm_entities, worm_names
 # TODO perhaps add groups
@@ -35,8 +36,12 @@ def matches_to_simple_json(matches):
             if(e[0]==-3):
                 resp = [{'type': e[0], 'id': e[1]}]
             else:
-                resp = [{'id': e[1], 'type': e[0]}, {'id2': 'toreplace'+e[1],'type2':'uniprot:' + str(e[0])}]
-            createMatching = {'start': a[0], 'end': a[1] + 1, 'normalizations': resp}
+                resp= list()
+                odict =  OrderedDict([('id', e[1]), ('type', e[0])])
+                odict2 = OrderedDict([('id2', 'toreplace'+e[1]), ('type2', 'uniprot:' + str(e[0]))])
+                resp.insert(0,odict)
+                resp.insert(1,odict2)
+            createMatching = OrderedDict([('end', a[1]),('normalizations', resp), ('start', a[0])])
         aList.append(createMatching)
 
     out = {'entities': aList}
@@ -57,6 +62,9 @@ def tsvFilesList():
 
 # test json samples
 json1 = '{"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606},{"id":"ENSMUSP00000029699","type":10090}]}'
+json2 = '{"entities":[{"end":3,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":0},{"end":7,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":4},{"end":12,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":9},{"end":16,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":13},{"end":20,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":17},{"end":26,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":23},{"end":31,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":27},{"end":35,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":32},{"end":40,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":37}]}'
+json3 = '{"entities":[{"end":183,"entities":[{"id":"ENSP00000358525","type":9606}],"start":180},{"end":188,"entities":[{"id":"ENSP00000431418","type":9606}],"start":184},{"end":252,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":247},{"end":350,"entities":[{"id":"ENSP00000358525","type":9606}],"start":331},{"end":355,"entities":[{"id":"ENSP00000358525","type":9606}],"start":352},{"end":412,"entities":[{"id":"ENSP00000431418","type":9606}],"start":384},{"end":418,"entities":[{"id":"ENSP00000431418","type":9606}],"start":414},{"end":549,"entities":[{"id":"ENSP00000358525","type":9606}],"start":546},{"end":554,"entities":[{"id":"ENSP00000431418","type":9606}],"start":550},{"end":780,"entities":[{"id":"ENSP00000358525","type":9606}],"start":777},{"end":796,"entities":[{"id":"ENSP00000431418","type":9606}],"start":792},{"end":821,"entities":[{"id":"ENSP00000358525","type":9606}],"start":818},{"end":839,"entities":[{"id":"ENSP00000431418","type":9606}],"start":835},{"end":878,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":873},{"end":999,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":994},{"end":1013,"entities":[{"id":"ENSP00000431418","type":9606}],"start":1009},{"end":1106,"entities":[{"id":"ENSMUSP00000101471","type":10090},{"id":"ENSP00000363763","type":9606},{"id":"ENSMUSP00000023462","type":10090},{"id":"ENSP00000215832","type":9606}],"start":1103},{"end":1149,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":1144},{"end":1228,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":1223},{"end":1239,"entities":[{"id":"ENSP00000358525","type":9606}],"start":1236},{"end":1244,"entities":[{"id":"ENSP00000431418","type":9606}],"start":1240}]}\n'
+
 # -----------------------------------------------------------------------------------
 
 # convert StringID to UniprotID
@@ -88,7 +96,18 @@ def stringIDtoUniprotID(values):
 
 
     # dictionary of common organisms
-    #dict = {'10090': 'mouse', '7955': 'else0', '9060': 'human', '3702':'else1', '4896':'else2', '4932':'else3', '511145':'else4', '6239':'else5', '7227':'else6'}
+    common_organisms = {'10090': '10090_reviewed_uniprot_2_string.04_2015.tsv',
+                        '9606': '9606_reviewed_uniprot_2_string.04_2015.tsv',
+                        '3702': '3702_reviewed_uniprot_2_string.04_2015.tsv',
+                        '4896': '4896_reviewed_uniprot_2_string.04_2015.tsv',
+                        '4932': '4932_reviewed_uniprot_2_string.04_2015.tsv',
+                        '511145': '511145_reviewed_uniprot_2_string.04_2015.tsv',
+                        '6239': '6239_reviewed_uniprot_2_string.04_2015.tsv',
+                        '7227': '7227_reviewed_uniprot_2_string.04_2015.tsv',
+                        '7955': '7955_reviewed_uniprot_2_string.04_2015.tsv',
+                        'full': 'full_uniprot_2_string.04_2015.tsv',
+                        }
+
 
     # find conversion of StringID to UniprotID
     def StrToUni(strId, entity):
@@ -105,12 +124,12 @@ def stringIDtoUniprotID(values):
     # loop through all occurrences of ids for each type
     for i in range(0,(len(jsonIDsAndTypes(values).keys()))):
         # get the complete filename that contains the type_name
-        matching = [s for s in tsvFilesList() if str(list(jsonIDsAndTypes(values).values())[i]) in s]
-        # find replacements of stringID with uniprotId in tsv
-        StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\''))
-        # change values of json object
+        #matching = [s for s in tsvFilesList() if str(list(jsonIDsAndTypes(values).values())[i]) in s]
+	matching = common_organisms[str(list(jsonIDsAndTypes(values).values())[i])]
+        # find replacements of stringID with uniprotId in tsv and change values of json object
         values = values.replace('toreplace'+str(list(jsonIDsAndTypes(values).keys())[i]),
-                             StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\'')))
+                             StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching))) 
+#StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\'')))
 
     values = re.sub("id2", "id", values)
     values = re.sub("type2", "type", values)
@@ -118,6 +137,12 @@ def stringIDtoUniprotID(values):
 
 # test example
 #print(stringIDtoUniprotID(json3))
+
+# -----------------------------------------------------------------------------------
+
+@app.route('/')
+def root():
+    return 'Test server'
 
 # -----------------------------------------------------------------------------------
 
@@ -199,4 +224,3 @@ if __name__ == '__main__':
         sys.exit(1)
 
     app.run(host='0.0.0.0', port=int(args.port), debug=False)
-
