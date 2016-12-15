@@ -42,7 +42,7 @@ docker run -p 5000:5000 --entrypoint bash tagger
  0. Validate the inputs
  0. Validate the outputs and check correctness
 
- * Added unit tests and changed the way the queries are done:
+* Added unit tests and changed the way the queries are done:
  0. Specify what you want tagged
  0. Validate the inputs in tests
  0. Automated tests can be run in order to stabilize the software against failures when changing methods
