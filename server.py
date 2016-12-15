@@ -21,11 +21,9 @@ app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
 
 tagger = Tagger()
-tagger.add_name("shpendm", "-111", "123")  # stub when testing
-tagger.add_name("p511", "-12", "1234")  # stub when testing
+#tagger.add_name("shpendm", "-111", "123")  # stub when testing
 tagger.load_global("dics/tagger_global.tsv") #tagger_global  #dics/worm_global
 tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv") #worm_entities, worm_names
-# TODO perhaps add groups
 
 # -----------------------------------------------------------------------------------
 
@@ -33,8 +31,10 @@ def matches_to_simple_json(matches):
     aList = list()
     for a in matches:
         for e in a[2]:
-            if(e[0]==-3):
-                resp = [{'type': e[0], 'id': e[1]}]
+            if(e[0]==-3 or e[0]==-22):
+                resp= list()
+                odict =  OrderedDict([('id2', e[1]), ('type2', e[0])])
+		resp.insert(0,odict)
             else:
                 resp= list()
                 odict =  OrderedDict([('id', e[1]), ('type', e[0])])
@@ -87,7 +87,8 @@ def stringIDtoUniprotID(values):
         ids1 = find_values('id', jsonText)
         types1 = find_values('type', jsonText)
 
-        types = [item for item in types1 if item != -3]
+        types = [item for item in types1 if (item != -3 or item != -22)]
+	#types = types1
         ids = [x for x in ids1 if not (x.isdigit() or x[0] == '-' and x[1:].isdigit())]
 
         # create a ordered dictionary with ids and types
@@ -142,20 +143,30 @@ def stringIDtoUniprotID(values):
 
 @app.route('/')
 def root():
-    return 'Test server'
+    return 'Welcome'
 
 # -----------------------------------------------------------------------------------
 
 @app.route('/annotate/post', methods=['POST'])
 def annotatePost():
 
+    entity_types = request.json.get('ids')
+    if entity_types is None:
+        entity_types="-22,9606" #default
+
     text = json.dumps(request.json.get('text'))
 
+    auto_detect = request.json.get('autodetect')
+    if auto_detect is None or auto_detect !="False":
+        auto_detect=True
+    else:
+	auto_detect = False
+
+
     document_id_stub = 1
-    entity_types="-22,9606" #-3,-22,9606
     entity_types = set([int(x) for x in entity_types.split(",")])
 
-    matches = tagger.get_matches(text, document_id_stub, entity_types, auto_detect=True, protect_tags=False)
+    matches = tagger.get_matches(text, document_id_stub, entity_types, auto_detect, protect_tags=False)
     jsonOut = matches_to_simple_json(matches)
     jsonOut = json.dumps(jsonOut)
     jsonOut = jsonOut.replace("'",'"')
