@@ -28,15 +28,16 @@ RUN mkdir -p ${DICS_DIR}
 RUN wget ${DICS_URL}
 RUN tar xvzf ${DICS_NAME} -C dics/
 
-COPY server.py ${WORKDIR}
-COPY testServer.py ${WORKDIR}
+WORKDIR /app/tagger/
 
 # download all directories for uniprot id mapping
-#RUN mkdir -p /app/tagger/uniprot/
 WORKDIR /app/tagger/
-RUN wget -r -np -nd -l 1 -A tsv.gz http://www.string-db.org/mapping_files/uniprot_mappings/
+COPY links.txt /app/tagger/.
+RUN wget -c -i /app/tagger/links.txt
 RUN gunzip *.gz
-RUN rm -rf robots.txt
+
+COPY server.py ${WORKDIR}
+COPY testServer.py ${WORKDIR}
 
 WORKDIR /app/tagger/
 
