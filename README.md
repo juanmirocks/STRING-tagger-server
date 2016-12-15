@@ -6,14 +6,18 @@ Here we are trying to develop a way to use tagging through the REST API. The ide
 # Running
 
 0. Clone this repository
-0. Build: `docker build -t tagger .`
-0. Run: `docker run -p 5000:5000 tagger`
+0. Build: `docker build -t tagger:1.0 .`
+0. Run: `docker run -p 5000:5000 tagger:1.0`
 0. Or run with your own dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
 
-# Testing for text
+# Testing for text with/without ids and autodetect
 
 ```
 curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio  or danio rerio have aldh9a1a and ab-cb8"}'
+
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","text":"p53 mouse tp53","autodetect":"False"}'
+
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
 
 ```
 # Running tests
@@ -31,16 +35,15 @@ docker run -p 5000:5000 --entrypoint bash tagger
  1. from larsjuhljensen/tagger we created a new dockerfile
  2. The dockerfile is adapted to our needs and it downloads the correct data (currently using worm_data for testing)
  3. Included requirements.txt in the dockerfile which can be modified when we need to modify it
- 4. Copied a new server.py and Makefile in the right directory
+ 4. Copied a new server.py
  5. Do the tests and check the results
 
-* Modifying the work so that all the parameters can be given directly through the API:
- 1. Create correct forms and re-directing
- 2. Validate the inputs
- 3. Validate the outputs and maybe put the output in a separate file
+* Modifying the work:
+ 1. Validate the inputs
+ 2. Validate the outputs and check correctness
 
  * Added unit tests and changed the way the queries are done:
- 1. Specify in the link what you want tagged
+ 1. Specify what you want tagged
  2. Validate the inputs in tests
  3. Automated tests can be run in order to stabilize the software against failures when changing methods
 
