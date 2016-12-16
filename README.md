@@ -1,14 +1,25 @@
 # STRING-tagger-server
 
-Here we are trying to develop a way to use tagging through the REST API. The idea is to  use dockers and a server and to allow people to input their documents or maybe to directly type the part they want it tagged. Below is documented the work and potential directions while developing.
+[STRING tagger](https://bitbucket.org/larsjuhljensen/tagger) **dockerized** as a **REST API**.
+
+* Features:
+
+  * Docker image directly depends on original [Docker image (larsjuhljensen/tagger)](https://hub.docker.com/r/larsjuhljensen/tagger/)
+  * This new image **contains the STRING dictionaries**
+  * REST API
+  * **Fast annotation** of individual or small document-texts:
+    * original image expects big batches and thus ignores the initial time-consuming loading of the heavy dictionaries),
+    * this new image loads the dictionaries only once and keeps them in memory through the REST API web server
+  * **Mapping of STRING ids to UniProt ids**
 
 
 # Running
 
 0. Clone this repository
-0. Build: `docker build -t tagger:1.0 .`
-0. Run: `docker run -p 5000:5000 tagger:1.0`
-0. Or run with your own dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
+0. Build: `docker build -t tagger .`
+0. Run: `docker run -p 5000:5000 tagger` (uses STRING dictionaries)
+0. (optionally) run with your dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
+
 
 # Testing for text with/without ids and autodetect
 
@@ -25,7 +36,7 @@ curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annota
 ```shell
 docker run -p 5000:5000 --entrypoint bash tagger
 
-# python testServer.py 
+# python testServer.py
 
 ```
 
