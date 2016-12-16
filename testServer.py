@@ -11,7 +11,8 @@ from server import stringIDtoUniprotID
 
 class SimpleTest(unittest.TestCase):
 
-    maxDiff = None
+    # TODO replace `dict` by simply `{}`, as in {text : "p53"}
+    # TODO rename this file to `test_server.py` and accordingly rename in Dockerfile and README.md
 
     def setUp(self):
         # creates a test client
