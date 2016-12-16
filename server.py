@@ -71,7 +71,7 @@ def tsvFilesList():
 # -----------------------------------------------------------------------------------
 
 # convert StringID to UniprotID
-def stringIDtoUniprotID(values):
+def string_id_to_uniprot_id(values):
     # find all IDs and types corresponding to them
     def find_values(id, json_repr):
         results = []
@@ -149,7 +149,7 @@ def root():
 # -----------------------------------------------------------------------------------
 
 @app.route('/annotate/post', methods=['POST'])
-def annotatePost():
+def annotate_post():
 
     entity_types = request.json.get('ids')
     if entity_types is None:
@@ -171,7 +171,7 @@ def annotatePost():
     jsonOut = matches_to_simple_json(matches)
     jsonOut = json.dumps(jsonOut)
     jsonOut = jsonOut.replace("'",'"')
-    jsonOut = stringIDtoUniprotID(jsonOut)
+    jsonOut = string_id_to_uniprot_id(jsonOut)
     jsonOut = json.loads(jsonOut)
 
     try:
@@ -212,7 +212,7 @@ def annotateGet(text=None):
     #jsonOut ='{"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606},{"id":"ENSMUSP00000029699","type":10090}]}'
     jsonOut = json.dumps(jsonOut)
     jsonOut = jsonOut.replace("'",'"')
-    jsonOut = stringIDtoUniprotID(jsonOut)
+    jsonOut = string_id_to_uniprot_id(jsonOut)
     jsonOut = json.loads(jsonOut)
 
     try:
