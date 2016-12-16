@@ -21,17 +21,9 @@
 0. (optionally) run with your dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
 
 
-# Development
-
-## Run general tests
+## Sample Runs
 
 ```shell
-docker run -p 5000:5000 tagger test_server.py
-```
-
-## Other texts
-
-```
 # Have ids=default (not given) and have autodetect=default (not given)
 curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio  or danio rerio have aldh9a1a and ab-cb8"}'
 
@@ -40,7 +32,15 @@ curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annota
 
 # Specify ids and have autodetect=default (not given)
 curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
+```
 
+
+# Development
+
+## Run general tests
+
+```shell
+docker run -p 5000:5000 tagger test_server.py
 ```
 
 # Required software
