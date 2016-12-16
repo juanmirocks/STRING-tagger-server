@@ -98,6 +98,7 @@ def stringIDtoUniprotID(values):
 
 
     # dictionary of common organisms
+    # TODO the date "04_2015" should be a constant defined at the beginning: REVIEWED_UNIPROT_2_STRING = '04_2015'
     common_organisms = {'10090': '10090_reviewed_uniprot_2_string.04_2015.tsv',
                         '9606': '9606_reviewed_uniprot_2_string.04_2015.tsv',
                         '3702': '3702_reviewed_uniprot_2_string.04_2015.tsv',
