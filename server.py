@@ -26,6 +26,8 @@ tagger = Tagger()
 # TODO use pep8 to follow the python syntax recommendations --> no warning or error should be shown
 # TODO remove the mixed use of tabs and spaces --> use spaces only
 # TODO variables & function names are_like_this, NOT areLikeThis
+# TODO replace pandas by simple tsv python library reader
+# TODO are you sure from the Dockerfile definition that we are using indeed Python 3 ??
 
 tagger.load_global("dics/tagger_global.tsv") #tagger_global  #dics/worm_global
 tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv") #worm_entities, worm_names
