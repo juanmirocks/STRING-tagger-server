@@ -3,7 +3,7 @@
 # For testing: "worm_dictionary.tar.gz", "tagger_dictionary.tar.gz"
 
 FROM larsjuhljensen/tagger
-MAINTAINER shpendmahmuti@gmail.com
+LABEL authors="Juan Miguel Cejuela (@juanmirocks), Shpend Mahmuti (shpendmahmuti@gmail.com)"
 
 RUN yum -y update && \
 	yum -y install wget && \
