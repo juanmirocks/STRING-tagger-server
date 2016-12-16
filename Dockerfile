@@ -10,6 +10,7 @@ RUN yum -y update && \
 	yum -y install tar && \
 	yum clean all
 
+# Shpend: epel_release is used for gpg keys when installing python (it creates problems sometimes in centOs system based on larstagger). It didn't work without it
 RUN yum -y install epel-release && yum clean all
 RUN yum -y install python-pip && yum clean all
 
