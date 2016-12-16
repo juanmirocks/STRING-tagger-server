@@ -42,5 +42,5 @@ COPY testServer.py ${WORKDIR}
 WORKDIR /app/tagger/
 
 EXPOSE 5000
-ENTRYPOINT ["python", "/app/tagger/server.py", "-p 5000"]
-#ENTRYPOINT ["python", "/app/tagger/testServer.py"]
+ENTRYPOINT ["python"]
+CMD ["/app/tagger/server.py", "-p 5000"]
