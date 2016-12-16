@@ -26,7 +26,7 @@
 ## Run general tests
 
 ```shell
-docker run -p 5000:5000 tagger testServer.py
+docker run -p 5000:5000 tagger test_server.py
 ```
 
 ## Other texts
@@ -42,3 +42,8 @@ curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annota
 curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
 
 ```
+
+# Required software:
+ 0. You need to install docker in [docker website](https://docs.docker.com/) and choose the apprepriate one for you
+ 0. Check whether it is working by following their instructions (simple tests needed)
+ 0. Try to create a admin terminal in order to avoid giving permissions all the time (this simplifies the work)
