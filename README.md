@@ -43,7 +43,7 @@ curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annota
 
 ```
 
-# Required software:
+# Required software
  0. You need to install docker in [docker website](https://docs.docker.com/) and choose the apprepriate one for you
  0. Check whether it is working by following their instructions (simple tests needed)
  0. Try to create a admin terminal in order to avoid giving permissions all the time (this simplifies the work)
