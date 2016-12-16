@@ -20,6 +20,7 @@ WORKDIR /app/tagger/
 COPY requirements.txt /app/tagger/.
 RUN pip install -r /app/tagger/requirements.txt
 RUN pip install pandas
+RUN pip install --upgrade pip
 
 ENV DICS_NAME="tagger_dictionary.tar.gz"
 ENV DICS_URL="http://download.jensenlab.org/$DICS_NAME"
