@@ -21,7 +21,12 @@ app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
 
 tagger = Tagger()
-#tagger.add_name("shpendm", "-111", "123")  # stub when testing
+
+# TODO here and below, delete all old-stub-dummy comments
+# TODO use pep8 to follow the python syntax recommendations --> no warning or error should be shown
+# TODO remove the mixed use of tabs and spaces --> use spaces only
+# TODO variables & function names are_like_this, NOT areLikeThis
+
 tagger.load_global("dics/tagger_global.tsv") #tagger_global  #dics/worm_global
 tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv") #worm_entities, worm_names
 
@@ -60,10 +65,6 @@ def tsvFilesList():
             continue
     return filesList
 
-# test json samples
-json1 = '{"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606},{"id":"ENSMUSP00000029699","type":10090}]}'
-json2 = '{"entities":[{"end":3,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":0},{"end":7,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":4},{"end":12,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":9},{"end":16,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":13},{"end":20,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":17},{"end":26,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":23},{"end":31,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":27},{"end":35,"entities":[{"id":"ENSMUSP00000029699","type":10090}],"start":32},{"end":40,"entities":[{"id":"ENSMUSP00000104298","type":10090},{"id":"ENSP00000269305","type":9606}],"start":37}]}'
-json3 = '{"entities":[{"end":183,"entities":[{"id":"ENSP00000358525","type":9606}],"start":180},{"end":188,"entities":[{"id":"ENSP00000431418","type":9606}],"start":184},{"end":252,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":247},{"end":350,"entities":[{"id":"ENSP00000358525","type":9606}],"start":331},{"end":355,"entities":[{"id":"ENSP00000358525","type":9606}],"start":352},{"end":412,"entities":[{"id":"ENSP00000431418","type":9606}],"start":384},{"end":418,"entities":[{"id":"ENSP00000431418","type":9606}],"start":414},{"end":549,"entities":[{"id":"ENSP00000358525","type":9606}],"start":546},{"end":554,"entities":[{"id":"ENSP00000431418","type":9606}],"start":550},{"end":780,"entities":[{"id":"ENSP00000358525","type":9606}],"start":777},{"end":796,"entities":[{"id":"ENSP00000431418","type":9606}],"start":792},{"end":821,"entities":[{"id":"ENSP00000358525","type":9606}],"start":818},{"end":839,"entities":[{"id":"ENSP00000431418","type":9606}],"start":835},{"end":878,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":873},{"end":999,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":994},{"end":1013,"entities":[{"id":"ENSP00000431418","type":9606}],"start":1009},{"end":1106,"entities":[{"id":"ENSMUSP00000101471","type":10090},{"id":"ENSP00000363763","type":9606},{"id":"ENSMUSP00000023462","type":10090},{"id":"ENSP00000215832","type":9606}],"start":1103},{"end":1149,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":1144},{"end":1228,"entities":[{"id":"ENSMUSP00000110115","type":10090},{"id":"ENSP00000264122","type":9606},{"id":"ENSP00000445920","type":9606}],"start":1223},{"end":1239,"entities":[{"id":"ENSP00000358525","type":9606}],"start":1236},{"end":1244,"entities":[{"id":"ENSP00000431418","type":9606}],"start":1240}]}\n'
 
 # -----------------------------------------------------------------------------------
 
@@ -129,15 +130,12 @@ def stringIDtoUniprotID(values):
 	matching = common_organisms[str(list(jsonIDsAndTypes(values).values())[i])]
         # find replacements of stringID with uniprotId in tsv and change values of json object
         values = values.replace('toreplace'+str(list(jsonIDsAndTypes(values).keys())[i]),
-                             StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching))) 
+                             StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching)))
 #StrToUni(str(list(jsonIDsAndTypes(values).keys())[i]), str(matching).strip('\'[]\'')))
 
     values = re.sub("id2", "id", values)
     values = re.sub("type2", "type", values)
     return(values)
-
-# test example
-#print(stringIDtoUniprotID(json3))
 
 # -----------------------------------------------------------------------------------
 
@@ -185,6 +183,7 @@ def annotatePost():
     return jsonOut
 
 
+# TODO what is this? Delete
 '''
 
 @app.route('/annotate', methods=['GET'])
