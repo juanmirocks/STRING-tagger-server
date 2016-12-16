@@ -12,7 +12,8 @@ RUN yum -y update && \
 
 # Shpend: epel_release is used for gpg keys when installing python (it creates problems sometimes in centOs system based on larstagger). It didn't work without it
 RUN yum -y install epel-release && yum clean all
-RUN yum -y install python-pip && yum clean all
+RUN yum -y install python34-setuptools
+RUN easy_install-3.4 pip
 
 WORKDIR /app/tagger/
 
@@ -43,6 +44,6 @@ COPY testServer.py ${WORKDIR}
 WORKDIR /app/tagger/
 
 EXPOSE 5000
-ENTRYPOINT ["python"]
+ENTRYPOINT ["python3.4"]
 CMD ["server.py", "-p 5000"]
 #CMD ["test_server.py"]
