@@ -26,10 +26,7 @@
 ## Run general tests
 
 ```shell
-docker run -p 5000:5000 --entrypoint bash tagger
-
-# python testServer.py
-
+docker run -p 5000:5000 tagger testServer.py
 ```
 
 ## Other texts
