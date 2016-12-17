@@ -19,7 +19,6 @@ WORKDIR /app/tagger/
 # pip install app requirements
 COPY requirements.txt /app/tagger/.
 RUN pip install -r /app/tagger/requirements.txt
-RUN pip install pandas
 RUN pip install --upgrade pip
 
 ENV DICS_NAME="tagger_dictionary.tar.gz"
