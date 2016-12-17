@@ -9,7 +9,7 @@ from flask.json import JSONEncoder
 import optparse
 import time
 import sys, getopt, io
-import pandas as pd
+import csv
 import json
 from collections import OrderedDict
 import re
@@ -23,8 +23,6 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/
 REVIEWED_UNIPROT_2_STRING_DATE = '04_2015'
 
 tagger = Tagger()
-
-# TODO replace pandas by simple tsv python library reader
 
 tagger.load_global("dics/tagger_global.tsv")
 tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv")
@@ -98,14 +96,14 @@ def string_id_to_uniprot_id(values):
 
     # find conversion of StringID to UniprotID
     def str_to_uni(str_id, entity):
-        indx = None
-        with open(entity) as tsvFile:
-            for num, line in enumerate(tsvFile, -1):
-                if str_id in line:
-                    indx = num
-        df = pd.read_csv(entity, sep='\t')
-        df = df.rename(columns={'#species   uniprot_ac|uniprot_id   string_id   identity   bit_score': 'col'})
-        return (str(df.iloc[[indx]]).split()[1 + 1])
+        with open(entity) as tsv_file:
+            # Skip first line
+            next(tsv_file, None)
+            data = dict(enumerate(csv.reader(tsv_file, delimiter='\t')))
+            for row in data:
+                if data[row][2] == str_id and data[row][1] != None:
+                    return data[row][1]
+        return "No uniprot id"
 
     # loop through all occurrences of ids for each type
     for i in range(0, (len(json_ids_and_types(values).keys()))):
