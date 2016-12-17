@@ -166,7 +166,7 @@ def annotate_post():
 
 
 if __name__ == '__main__':
-    parser = optparse.OptionParser(usage="python3.4 server.py -p ")
+    parser = optparse.OptionParser(usage="python server.py -p ")
     parser.add_option('-p', '--port', action='store', dest='port', help='The port to listen.')
     (args, _) = parser.parse_args()
     if args.port == None:
