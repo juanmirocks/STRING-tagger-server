@@ -103,7 +103,7 @@ def string_id_to_uniprot_id(values):
             for row in data:
                 if data[row][2] == str_id and data[row][1] != None:
                     return data[row][1]
-        return "No uniprot id"
+        return ""
 
     # loop through all occurrences of ids for each type
     for i in range(0, (len(json_ids_and_types(values).keys()))):
