@@ -5,8 +5,8 @@
 FROM larsjuhljensen/tagger
 LABEL authors="Juan Miguel Cejuela (@juanmirocks), Shpend Mahmuti (shpendmahmuti@gmail.com)"
 
-RUN yum -y update && \
-	yum -y install wget && \
+# RUN yum -y update -- This line it shows problems in some versions of docker 
+RUN yum -y install wget && \
 	yum -y install tar && \
 	yum clean all
 
