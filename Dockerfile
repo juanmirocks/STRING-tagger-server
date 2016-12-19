@@ -38,7 +38,7 @@ RUN wget -c -i /app/tagger/links.txt
 RUN gunzip *.gz
 
 COPY server.py ${WORKDIR}
-COPY testServer.py ${WORKDIR}
+COPY test_server.py ${WORKDIR}
 
 WORKDIR /app/tagger/
 
