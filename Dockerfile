@@ -29,8 +29,6 @@ RUN mkdir -p ${DICS_DIR}
 RUN wget ${DICS_URL}
 RUN tar xvzf ${DICS_NAME} -C dics/
 
-WORKDIR /app/tagger/
-
 # download all directories for uniprot id mapping
 WORKDIR /app/tagger/
 COPY links.txt /app/tagger/.
@@ -39,8 +37,6 @@ RUN gunzip *.gz
 
 COPY server.py ${WORKDIR}
 COPY test_server.py ${WORKDIR}
-
-WORKDIR /app/tagger/
 
 EXPOSE 5000
 ENTRYPOINT ["python"]
