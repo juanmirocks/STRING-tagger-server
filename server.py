@@ -92,17 +92,19 @@ def string_id_to_uniprot_id(values):
                         '7227': '7227_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
                         '7955': '7955_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
                         'full': 'full_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
+                        '10116': '10116' # there is no file for conversion to uniprotId
                         }
 
     # find conversion of StringID to UniprotID
     def str_to_uni(str_id, entity):
-        with open(entity) as tsv_file:
-            # Skip first line
-            next(tsv_file, None)
-            data = dict(enumerate(csv.reader(tsv_file, delimiter='\t')))
-            for row in data:
-                if data[row][2] == str_id and data[row][1] != None:
-                    return data[row][1]
+        if entity != '10116':
+            with open(entity) as tsv_file:
+                # Skip first line
+                next(tsv_file, None)
+                data = dict(enumerate(csv.reader(tsv_file, delimiter='\t')))
+                for row in data:
+                    if data[row][2] == str_id and data[row][1] != None:
+                        return data[row][1]
         return ""
 
     # loop through all occurrences of ids for each type
