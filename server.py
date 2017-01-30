@@ -16,6 +16,8 @@ import re
 
 from tagger import Tagger
 
+# -----------------------------------------------------------------------------------
+
 app = Flask(__name__)
 
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
@@ -24,12 +26,13 @@ REVIEWED_UNIPROT_2_STRING_DATE = '04_2015'
 
 tagger = Tagger()
 
+# loads the corresponding data
 tagger.load_global("dics/tagger_global.tsv")
 tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv")
 
-
 # -----------------------------------------------------------------------------------
 
+# returns a dictionary that is further used for conversion to uniprotID
 def matches_to_simple_json(matches):
     a_list = list()
     for a in matches:
@@ -48,7 +51,6 @@ def matches_to_simple_json(matches):
             a_list.append(create_matching)
     out = {'entities': a_list}
     return out
-
 
 # -----------------------------------------------------------------------------------
 
@@ -119,16 +121,16 @@ def string_id_to_uniprot_id(values):
     values = re.sub("type2", "type", values)
     return (values)
 
-
 # -----------------------------------------------------------------------------------
 
+# used to test whether server is running (localhost:5000/ should display the 'Wellcome' message
 @app.route('/')
 def root():
-    return 'Welcome'
-
+    return 'Wellcome'
 
 # -----------------------------------------------------------------------------------
 
+# used to provide the corresponding json output for the post requests
 @app.route('/annotate/post', methods=['POST'])
 def annotate_post():
     entity_types = request.json.get('ids')
@@ -146,6 +148,7 @@ def annotate_post():
     document_id_stub = 1
     entity_types = set([int(x) for x in entity_types.split(",")])
 
+    # uses the tagger wrapper from lars' tagger to get the matches' information
     matches = tagger.get_matches(text, document_id_stub, entity_types, auto_detect, protect_tags=False)
     json_out = matches_to_simple_json(matches)
     json_out = json.dumps(json_out)
@@ -164,6 +167,7 @@ def annotate_post():
 
     return json_out
 
+# -----------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(usage="python server.py -p ")
