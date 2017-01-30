@@ -19,7 +19,7 @@
 0. Install docker from [docker website](https://docs.docker.com/engine/installation/)
 0. Check whether it is working by following their instructions (simple tests needed)
 0. (optionally) on Linux, create an admin terminal in order to avoid giving permissions all the time (simplifies the work)
-0. For docker related commands, you can refer to the following links: [link 1](https://github.com/wsargent/docker-cheat-sheet) or [link 2](https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes#a-docker-cheat-sheet)
+0. For docker related commands, you can refer to the following [docker cheat sheet](https://github.com/wsargent/docker-cheat-sheet)
 
 
 # Installation & Running
