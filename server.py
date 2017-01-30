@@ -44,8 +44,8 @@ def matches_to_simple_json(matches):
                 odict2 = OrderedDict([('id2', 'toreplace' + e[1]), ('type2', 'uniprot:' + str(e[0]))])
                 resp.insert(0, odict)
                 resp.insert(1, odict2)
-        create_matching = OrderedDict([('end', a[1]), ('normalizations', resp), ('start', a[0])])
-        a_list.append(create_matching)
+            create_matching = OrderedDict([('end', a[1]), ('normalizations', resp), ('start', a[0])])
+            a_list.append(create_matching)
     out = {'entities': a_list}
     return out
 
