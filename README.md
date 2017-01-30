@@ -43,7 +43,7 @@
 0. Caenorhabditis elegans with taxonomy id: **6239**
 0. Drosophila melanogaster (Fruit fly) with taxonomy id: **7227**
 0. Danio rerio (Zebrafish) (Brachydanio rerio) with taxonomy id: **7955**
-0. Rattus norvegicus (Rat) with taxonomy id: **10116** (*currently there is no file for conversion to uniprotId for this organism*)
+0. Rattus norvegicus (Rat) with taxonomy id: **10116** (*currently there is no file for conversion to uniprot Id for this organism*)
 
 
 ## Sample Runs
