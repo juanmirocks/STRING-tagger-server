@@ -135,7 +135,7 @@ def root():
 def annotate_post():
     entity_types = request.json.get('ids')
     if entity_types is None:
-        entity_types = "-22,9606"  # default
+        entity_types = "-22,-3,9606"  # default (used to recognize localization_id, organism_id and uniprot_id)
 
     text = json.dumps(request.json.get('text'))
 
