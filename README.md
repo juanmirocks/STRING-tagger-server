@@ -52,19 +52,19 @@ Proteins are tagged for these organisms:
 
 Parameters used when sending a post request:
 
-0. **ids**:
+* **ids**:
  * -22: used to tag subcellular localization and gives as a response a *GO ID*.
  * -3: used to tag organism names and gives as a response *TAXONOMY ID*.
  * taxonomy id (example `9606`): used to tag proteins for the specified taxonomy id and gives as a response *STRING ID* and *UNIPROT ID*.
-0. **text**:
+* **text**:
  * text that is used for tagging (example: `tp53 mouse`)
-0. **autodetect**:
+* **autodetect**:
  * *True*: 
-  i. When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID for mouse, even if taxonomy id for mouse is not included in the *ids* parameter.
-  ii. When text is `tp53`, then it only returns the STRING ID and UNIPROT ID for the specified taxonomy ids in the *ids* parameter.
+  * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID for mouse, even if taxonomy id for mouse is not included in the *ids* parameter.
+  *. When text is `tp53`, then it only returns the STRING ID and UNIPROT ID for the specified taxonomy ids in the *ids* parameter.
  * *False*:
-  i. When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID only for the specified taxonomy id in the *ids* parameter even though `mouse` is included in the *text*.
-  ii. When text is given as `tp53`, then it returns the *STRING ID* and *UNIPROT ID* only for the specified taxonomy id in the *ids* parameter, so it gives the same response as in the previous case.
+  * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID only for the specified taxonomy id in the *ids* parameter even though `mouse` is included in the *text*.
+  * When text is given as `tp53`, then it returns the *STRING ID* and *UNIPROT ID* only for the specified taxonomy id in the *ids* parameter, so it gives the same response as in the previous case.
 
 The default parameters annotate subcellular localization and all organisms' proteins:
 
