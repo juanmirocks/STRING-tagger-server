@@ -60,11 +60,11 @@ Parameters used when sending a post request:
  * text that is used for tagging (example: `tp53 mouse`)
 0. **autodetect**:
  * *True*: 
-  * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID for mouse, even if taxonomy id for mouse is not included in the *ids* parameter.
-  * When text is `tp53`, then it only returns the STRING ID and UNIPROT ID for the specified taxonomy ids in the *ids* parameter.
+  i. When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID for mouse, even if taxonomy id for mouse is not included in the *ids* parameter.
+  ii. When text is `tp53`, then it only returns the STRING ID and UNIPROT ID for the specified taxonomy ids in the *ids* parameter.
  * *False*:
-  * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID only for the specified taxonomy id in the *ids* parameter even though `mouse` is included in the *text*.
-  * When text is given as `tp53`, then it returns the *STRING ID* and *UNIPROT ID* only for the specified taxonomy id in the *ids* parameter, so it gives the same response as in the previous case.
+  i. When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID only for the specified taxonomy id in the *ids* parameter even though `mouse` is included in the *text*.
+  ii. When text is given as `tp53`, then it returns the *STRING ID* and *UNIPROT ID* only for the specified taxonomy id in the *ids* parameter, so it gives the same response as in the previous case.
 
 The default parameters annotate subcellular localization and all organisms' proteins:
 
