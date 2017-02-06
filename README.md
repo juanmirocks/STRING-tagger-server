@@ -6,12 +6,12 @@
 
   * Docker image directly depends on original [Docker image (larsjuhljensen/tagger)](https://hub.docker.com/r/larsjuhljensen/tagger/)
   * This new image **contains the STRING dictionaries**
-  * REST API
+  * **REST API**
   * **Fast annotation** of individual or small document-texts:
     * original image expects big batches and thus ignores the initial time-consuming operation such as loading of the heavy dictionaries,
-    * this new image loads the dictionaries through the REST API web server only once and keeps them in memory 
+    * this new image loads the dictionaries through the REST API web server only once and keeps them in memory
   * **Mapping of STRING ids to UniProt ids**
-  * **Provides response in JSON format for the given post requests**
+  * Response in **JSON format**
 
 
 # Required software
@@ -32,13 +32,15 @@
 0. Check whether the server is running: `localhost:5000/ should display a 'Wellcome' message`
 
 
-# Supported organisms and their [taxonomy ids](http://www.uniprot.org/taxonomy/):
+# Supported organisms and their [taxonomy ids](http://www.uniprot.org/taxonomy/)
 
-0. Mus musculus(Mouse) with taxonomy id: **10090**
+Proteins are tagged for these organisms:
+
 0. Homo sapiens(Human) with taxonomy id: **9606**
 0. Arabidopsis thaliana(Mouse-ear cress) with taxonomy id: **3702**
-0. Schizosaccharomyces pombe (Fission yeast) with taxonomy id: **4896**
 0. Saccharomyces cerevisiae (Baker's yeast) with taxonomy id: **4932**
+0. Mus musculus(Mouse) with taxonomy id: **10090**
+0. Schizosaccharomyces pombe (Fission yeast) with taxonomy id: **4896**
 0. Escherichia coli str. K-12 substr. MG1655 with taxonomy id: **511145**
 0. Caenorhabditis elegans with taxonomy id: **6239**
 0. Drosophila melanogaster (Fruit fly) with taxonomy id: **7227**
@@ -48,14 +50,29 @@
 
 ## Sample Runs
 
+The default parameters annotate subcellular localization and all organisms' proteins:
+
+* `ids=-22, 9606`
+* `autodetect=True`
+
+
+Examples:
+
 ```shell
-# Have ids=default (not given) and have autodetect=default (not given)
-curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio  or danio rerio have aldh9a1a and ab-cb8"}'
+
+# Run with default ids and default autodetect
+curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"[human] trichostatin A. The protein was expressed in the membrane fraction of transfected MDCK cells."}'
+
+# Run with default ids and default autodetect
+curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio or danio rerio have aldh9a1a and ab-cb8"}'
 
 # Specify ids and autodetect=False
-curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","text":"p53 mouse tp53","autodetect":"False"}'
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False","text":"p53 mouse tp53"}'
 
-# Specify ids and have autodetect=default (not given)
+# Specify ids and autodetect=False
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False",text:"Dnm1p, which assembles on the mitochondrial outer membrane into punctate structures associated with sites of membrane [... in yeast]"}'
+
+# Specify ids (default autodetect)
 curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
 ```
 
