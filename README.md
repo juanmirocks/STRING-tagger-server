@@ -1,31 +1,86 @@
 # STRING-tagger-server
 
-Here we are trying to develop a way to use tagging through the web. The idea is to  use dockers and a server and to allow people to input their documents or maybe to directly type the part they want it tagged. Below is documented the work and potential directions while developing.
+[STRING tagger](https://bitbucket.org/larsjuhljensen/tagger) **dockerized** as a **REST API**.
 
-* Understanding the work:
- 1. from larsjuhljensen/tagger we created a new dockerfile
- 2. The dockerfile is adapted to our needs and it downloads the correct data (currently using worm_data for testing)
- 3. Included requirements.txt in the dockerfile which can be modified when we need to modify it
- 4. Copied a new server.py and Makefile in the right directory
- 5. Do the tests and check the results
+* Features:
 
-* Modifying the work so that all the parameters can be given directly through the web (still working):
- 1. Create correct forms and re-directing
- 2. Validate the inputs
- 3. Validate the outputs and maybe put the output in a separate file
+  * Docker image directly depends on original [Docker image (larsjuhljensen/tagger)](https://hub.docker.com/r/larsjuhljensen/tagger/)
+  * This new image **contains the STRING dictionaries**
+  * **REST API**
+  * **Fast annotation** of individual or small document-texts:
+    * original image expects big batches and thus ignores the initial time-consuming operation such as loading of the heavy dictionaries,
+    * this new image loads the dictionaries through the REST API web server only once and keeps them in memory
+  * **Mapping of STRING ids to UniProt ids**
+  * Response in **JSON format**
 
 
-* Required to run the software:
- 1. You need to install docker in [docker website](https://docs.docker.com/) and choose the apprepriate one for you
- 2. Check whether it is working by following their instructions (simple tests needed)
- 3. Try to create a admin terminal in order to avoid giving permissions all the time (this simplifies the work)
+# Required software
 
-* Running the software:
- 1. Build: ``` $ docker build -t tagger . ```
- 2. Run: ``` $ docker run -p 5000:5000 tagger ```
- 3. Go to a browser and try:  
- ``` http://localhost:5000/ ```  (in development)  
- ``` http://localhost:5000/annotate/1 ```  (check a simple result)
- 4. Optional: ``` docker run -ti --entrypoint bash tagger ```  
- Check the files/folders of the image inside: ``` ls ```  
- Check the content inside the files/folders of the image: ``` vim [filename] ```
+0. Install docker from [docker website](https://docs.docker.com/engine/installation/)
+0. Check whether it is working by following their instructions (simple tests needed)
+0. (optionally) on Linux, create an admin terminal in order to avoid giving permissions all the time (simplifies the work)
+0. For docker related commands, you can refer to the following [docker cheat sheet](https://github.com/wsargent/docker-cheat-sheet)
+
+
+# Installation & Running
+
+0. Clone this repository: git clone https://github.com/juanmirocks/STRING-tagger-server.git
+0. Go to the corresponding dictionary where the Dockerfile is present
+0. Build the image from the Dockerfile: `docker build -t tagger .`
+0. Run the docker container: `docker run -p 5000:5000 tagger` (uses STRING dictionaries)
+0. (optionally) run with your dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
+0. Check whether the server is running: `localhost:5000/ should display a 'Wellcome' message`
+
+
+# Supported organisms and their [taxonomy ids](http://www.uniprot.org/taxonomy/)
+
+Proteins are tagged for these organisms:
+
+0. Homo sapiens(Human) with taxonomy id: **9606**
+0. Arabidopsis thaliana(Mouse-ear cress) with taxonomy id: **3702**
+0. Saccharomyces cerevisiae (Baker's yeast) with taxonomy id: **4932**
+0. Mus musculus(Mouse) with taxonomy id: **10090**
+0. Schizosaccharomyces pombe (Fission yeast) with taxonomy id: **4896**
+0. Escherichia coli str. K-12 substr. MG1655 with taxonomy id: **511145**
+0. Caenorhabditis elegans with taxonomy id: **6239**
+0. Drosophila melanogaster (Fruit fly) with taxonomy id: **7227**
+0. Danio rerio (Zebrafish) (Brachydanio rerio) with taxonomy id: **7955**
+0. Rattus norvegicus (Rat) with taxonomy id: **10116** (*currently there is no file for conversion to uniprot Id for this organism*)
+
+
+## Sample Runs
+
+The default parameters annotate subcellular localization and all organisms' proteins:
+
+* `ids=-22, 9606`
+* `autodetect=True`
+
+
+Examples:
+
+```shell
+
+# Run with default ids and default autodetect
+curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"[human] trichostatin A. The protein was expressed in the membrane fraction of transfected MDCK cells."}'
+
+# Run with default ids and default autodetect
+curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio or danio rerio have aldh9a1a and ab-cb8"}'
+
+# Specify ids and autodetect=False
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False","text":"p53 mouse tp53"}'
+
+# Specify ids and autodetect=False
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False",text:"Dnm1p, which assembles on the mitochondrial outer membrane into punctate structures associated with sites of membrane [... in yeast]"}'
+
+# Specify ids (default autodetect)
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
+```
+
+
+# Development
+
+## Run general tests
+
+```shell
+docker run -p 5000:5000 tagger test_server.py
+```
