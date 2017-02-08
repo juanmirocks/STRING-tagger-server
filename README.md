@@ -59,7 +59,7 @@ Parameters used when sending a post request:
 * **text**:
   * text that is used for tagging (example: `tp53 mouse`)
 * **autodetect**:
-  * *True*: 
+  * *True*:
     * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID for mouse, even if taxonomy id for mouse is not included in the *ids* parameter.
     * When text is `tp53`, then it only returns the STRING ID and UNIPROT ID for the specified taxonomy ids in the *ids* parameter.
   * *False*:
@@ -77,18 +77,15 @@ Examples:
 ```shell
 
 # Run with default ids and default autodetect
-curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"[human] trichostatin A. The protein was expressed in the membrane fraction of transfected MDCK cells."}'
-
-# Run with default ids and default autodetect
 curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio or danio rerio have aldh9a1a and ab-cb8"}'
 
 # Specify ids and autodetect=False
 curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False","text":"p53 mouse tp53"}'
 
 # Specify ids and autodetect=False
-curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False",text:"Dnm1p, which assembles on the mitochondrial outer membrane into punctate structures associated with sites of membrane [... in yeast]"}'
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False","text":"Dnm1p, which assembles on the mitochondrial outer membrane into punctate structures associated with sites of membrane [... in yeast]"}'
 
-# Specify ids (default autodetect)
+# Specify ids (and default autodetect=True)
 curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
 ```
 
