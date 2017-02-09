@@ -40,18 +40,25 @@ def parse_mapping_dics():
 
 
 def init():
+    global tagger
+    global mapping_dics
+
     tagger = Tagger()
     tagger.load_global("tagger_dics/tagger_global.tsv")
     tagger.load_names("tagger_dics/tagger_entities.tsv", "tagger_dics/tagger_names.tsv")
     mapping_dics = parse_mapping_dics()
 
 
-init()
-
 # -----------------------------------------------------------------------------------
 
 def tagger2simple(tagger_output):
+    for entity in tagger_output:
+        start, end, norms = entity
+
+        start -= 1  # tagger is 1-indexed; we return 0-indexed
+
     pass
+
 
 # -----------------------------------------------------------------------------------
 
@@ -79,11 +86,14 @@ def annotate():
     elif output == "tagger":
         return flask.jsonify(matches)
 
+
 # -----------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Annotate mentions in text of proteins, subcellular localizations, and organisms')
     parser.add_argument('--port', '-p', type=int, required=False, default=5000, help='The port for the REST server to listen to.')
     args = parser.parse_args()
+
+    init()
 
     app.run(host='0.0.0.0', port=args.port, debug=False)
