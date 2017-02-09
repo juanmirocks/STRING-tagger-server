@@ -73,10 +73,12 @@ def annotate():
     ids = request.json.get('ids', request.args.get('ids', '9606,-22,-3'))
     ids = set([int(x) for x in ids.split(",")])
     auto_detect = request.json.get('autodetect', request.args.get('autodetect', 'true'))
-    auto_detect = bool(auto_detect.tolower())
-    text = request.json.get('text', request.args.get('text', Exception("The text to tag must be provided")))
+    auto_detect = bool(auto_detect.lower())
     output = request.json.get('output', request.args.get('output', 'simple'))
-    document_id_stub = 1
+    document_id_stub = "1"
+    text = request.json.get('text', request.args.get('text', None))
+    if not text:
+        raise AssertionError("The text to tag must be provided")
 
     matches = tagger.get_matches(text, document_id_stub, ids, auto_detect, protect_tags=False)
 
