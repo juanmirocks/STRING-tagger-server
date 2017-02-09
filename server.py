@@ -1,19 +1,16 @@
 import os
 import argparse
 import flask
-from flask import Flask
-from flask import request, current_app, json
-from flask.json import JSONEncoder
+from flask import request
 import glob
-import json
 import time
 
 from tagger import Tagger
 
 # -----------------------------------------------------------------------------------
 
-app = Flask(__name__)
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
+app = flask.Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # uglify json; http://flask.pocoo.org/docs/0.10/config/
 
 tagger = None
 mapping_dics = None  # dictionary or organism ids (NCBI Taxonomy) to dictionary of string_ids to tuple (uniprot_ac, uniprot_id)
@@ -51,6 +48,10 @@ def init():
 
 init()
 
+# -----------------------------------------------------------------------------------
+
+def tagger2simple(tagger_output):
+    pass
 
 # -----------------------------------------------------------------------------------
 
@@ -59,45 +60,24 @@ def root():
     return 'Welcome'
 
 
-# used to provide the corresponding json output for the post requests
 @app.route('/annotate', methods=['POST'])
 def annotate():
 
-
-    entity_types = request.json.get('ids')
-    if entity_types is None:
-        entity_types = "-22,9606"  # default (used to recognize localization_id and uniprot_id)
-        # to include organism_id in defaults add "-3" in entity_types
-
-    text = json.dumps(request.json.get('text'))
-
-    auto_detect = request.json.get('autodetect')
-    if auto_detect is None or auto_detect != "False":
-        auto_detect = True
-    else:
-        auto_detect = False
-
+    ids = request.json.get('ids', request.args.get('ids', '9606,-22,-3'))
+    ids = set([int(x) for x in ids.split(",")])
+    auto_detect = request.json.get('autodetect', request.args.get('autodetect', 'true'))
+    auto_detect = bool(auto_detect.tolower())
+    text = request.json.get('text', request.args.get('text', Exception("The text to tag must be provided")))
+    output = request.json.get('output', request.args.get('output', 'simple'))
     document_id_stub = 1
-    entity_types = set([int(x) for x in entity_types.split(",")])
 
-    # uses the tagger wrapper from lars' tagger to get the matches' information
-    matches = tagger.get_matches(text, document_id_stub, entity_types, auto_detect, protect_tags=False)
-    json_out = matches_to_simple_json(matches)
-    json_out = json.dumps(json_out)
-    json_out = json_out.replace("'", '"')
-    json_out = string_id_to_uniprot_id(json_out)
-    json_out = json.loads(json_out)
+    matches = tagger.get_matches(text, document_id_stub, ids, auto_detect, protect_tags=False)
 
-    try:
-        json_out = flask.jsonify(json_out)
-        json_out.status_code = 200
-    except RuntimeError as e:
-        if str(e) == 'working outside of application context':
-            pass
-        else:
-            raise
+    if output == "simple":
+        raise NotImplementedError
 
-    return json_out
+    elif output == "tagger":
+        return flask.jsonify(matches)
 
 # -----------------------------------------------------------------------------------
 
