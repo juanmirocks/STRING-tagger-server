@@ -84,6 +84,6 @@ def annotate():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Annotate mentions in text of proteins, subcellular localizations, and organisms')
     parser.add_argument('--port', '-p', type=int, required=False, default=5000, help='The port for the REST server to listen to.')
-    (args, _) = parser.parse_args()
+    args = parser.parse_args()
 
     app.run(host='0.0.0.0', port=args.port, debug=False)
