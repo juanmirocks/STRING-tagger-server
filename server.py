@@ -123,15 +123,14 @@ def string_id_to_uniprot_id(values):
 
 # -----------------------------------------------------------------------------------
 
-# used to test whether server is running (localhost:5000/ should display the 'Wellcome' message
 @app.route('/')
 def root():
-    return 'Wellcome'
+    return 'Welcome'
 
 # -----------------------------------------------------------------------------------
 
 # used to provide the corresponding json output for the post requests
-@app.route('/annotate/post', methods=['POST'])
+@app.route('/annotate', methods=['POST'])
 def annotate_post():
     entity_types = request.json.get('ids')
     if entity_types is None:
