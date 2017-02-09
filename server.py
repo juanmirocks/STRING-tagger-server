@@ -1,124 +1,56 @@
-"""Tagger Server"""
-
-import argparse
 import os
+import argparse
 import flask
 from flask import Flask
 from flask import request, current_app, json
 from flask.json import JSONEncoder
-import time
-import sys, getopt, io
-import csv
+import glob
 import json
-from collections import OrderedDict
-import re
+import time
 
 from tagger import Tagger
 
 # -----------------------------------------------------------------------------------
 
 app = Flask(__name__)
-
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # see http://flask.pocoo.org/docs/0.10/config/
 
-REVIEWED_UNIPROT_2_STRING_DATE = '04_2015'
-
-tagger = Tagger()
-
-# loads the corresponding data
-tagger.load_global("tagger_dics/tagger_global.tsv")
-tagger.load_names("tagger_dics/tagger_entities.tsv", "tagger_dics/tagger_names.tsv")
+tagger = None
+mapping_dics = None  # dictionary or organism ids (NCBI Taxonomy) to dictionary of string_ids to tuple (uniprot_ac, uniprot_id)
 
 # -----------------------------------------------------------------------------------
 
-# returns a dictionary that is further used for conversion to uniprotID
-def matches_to_simple_json(matches):
-    a_list = list()
-    for a in matches:
-        for e in a[2]:
-            if (e[0] == -3 or e[0] == -22):
-                resp = list()
-                odict = OrderedDict([('id2', e[1]), ('type2', e[0])])
-                resp.insert(0, odict)
-            else:
-                resp = list()
-                odict = OrderedDict([('id', e[1]), ('type', e[0])])
-                odict2 = OrderedDict([('id2', 'toreplace' + e[1]), ('type2', 'uniprot:' + str(e[0]))])
-                resp.insert(0, odict)
-                resp.insert(1, odict2)
-            create_matching = OrderedDict([('end', a[1]), ('normalizations', resp), ('start', a[0])])
-            a_list.append(create_matching)
-    out = {'entities': a_list}
-    return out
+def parse_mapping_dics():
 
-# -----------------------------------------------------------------------------------
+    def parse_mapping_file(file_path):
+        ret = {}
+        with open(file_path) as f:
+            next(f)  # skip header
+            for line in f:
+                _, uniprot, string_id, _, _ = line.split("\t")
+                ret[string_id] = tuple(uniprot.split("|"))
+        return ret
 
-# convert StringID to UniprotID
-def string_id_to_uniprot_id(values):
-    # find all IDs and types corresponding to them
-    def find_values(id, json_repr):
-        results = []
+    ret = {}
 
-        def _decode_dict(a_dict):
-            try:
-                results.append(a_dict[id])
-            except KeyError:
-                pass
-            return a_dict
+    for file_path in glob.glob("mapping_dics/*.tsv"):
+        filename = os.path.basename(file_path)
+        organism = int(filename.split("_")[0])
 
-        json.loads(json_repr, object_hook=_decode_dict)
-        return results
+        ret[organism] = parse_mapping_file(file_path)
 
-    # format ids and types in a dictionary format
-    def json_ids_and_types(json_text):
-        # find all occurrences of ids and types
-        ids1 = find_values('id', json_text)
-        types1 = find_values('type', json_text)
+    return ret
 
-        types = [item for item in types1 if (item != -3 or item != -22)]
-        ids = [x for x in ids1 if not (x.isdigit() or x[0] == '-' and x[1:].isdigit())]
 
-        # create a ordered dictionary with ids and types
-        new_dict = OrderedDict(zip(ids, types))  # new_dict = OrderedDict(zip(ids, types))
-        return (new_dict)
+def init():
+    tagger = Tagger()
+    tagger.load_global("tagger_dics/tagger_global.tsv")
+    tagger.load_names("tagger_dics/tagger_entities.tsv", "tagger_dics/tagger_names.tsv")
+    mapping_dics = parse_mapping_dics()
 
-    # dictionary of common organisms
-    common_organisms = {'10090': '10090_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '9606': '9606_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '3702': '3702_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '4896': '4896_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '4932': '4932_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '511145': '511145_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '6239': '6239_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '7227': '7227_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '7955': '7955_reviewed_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        'full': 'full_uniprot_2_string.' + REVIEWED_UNIPROT_2_STRING_DATE + '.tsv',
-                        '10116': '10116' # there is no file for conversion to uniprotId
-                        }
 
-    # find conversion of StringID to UniprotID
-    def str_to_uni(str_id, entity):
-        if entity != '10116':
-            with open(entity) as tsv_file:
-                # Skip first line
-                next(tsv_file, None)
-                data = dict(enumerate(csv.reader(tsv_file, delimiter='\t')))
-                for row in data:
-                    if data[row][2] == str_id and data[row][1] != None:
-                        return data[row][1]
-        return ""
+init()
 
-    # loop through all occurrences of ids for each type
-    for i in range(0, (len(json_ids_and_types(values).keys()))):
-        # get the complete filename that contains the type_name
-        matching = common_organisms[str(list(json_ids_and_types(values).values())[i])]
-        # find replacements of stringID with uniprotId in tsv and change values of json object
-        values = values.replace('toreplace' + str(list(json_ids_and_types(values).keys())[i]),
-                                str_to_uni(str(list(json_ids_and_types(values).keys())[i]), str(matching)))
-
-    values = re.sub("id2", "id", values)
-    values = re.sub("type2", "type", values)
-    return (values)
 
 # -----------------------------------------------------------------------------------
 
@@ -126,11 +58,12 @@ def string_id_to_uniprot_id(values):
 def root():
     return 'Welcome'
 
-# -----------------------------------------------------------------------------------
 
 # used to provide the corresponding json output for the post requests
 @app.route('/annotate', methods=['POST'])
-def annotate_post():
+def annotate():
+
+
     entity_types = request.json.get('ids')
     if entity_types is None:
         entity_types = "-22,9606"  # default (used to recognize localization_id and uniprot_id)
