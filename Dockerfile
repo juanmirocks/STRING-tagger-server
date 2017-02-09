@@ -49,7 +49,7 @@ RUN pip install -r requirements.txt
 COPY server.py .
 COPY test_server.py .
 
-RUN python test_server.py
+# RUN python test_server.py
 
 EXPOSE 5000
 ENTRYPOINT ["python"]
