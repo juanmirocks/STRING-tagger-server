@@ -34,8 +34,8 @@ RUN tar xvzf *.tar.gz
 # Dictionaries for stringID to uniprotID mapping
 ENV MAPPING_DICS_DIR="${TAGGER_DIR}/mapping_dics/"
 WORKDIR ${MAPPING_DICS_DIR}
-COPY links.txt .
-RUN wget -c -i links.txt
+COPY mapping_files_urls.txt .
+RUN wget -c -i mapping_files_urls.txt
 RUN gunzip *.gz
 
 #
