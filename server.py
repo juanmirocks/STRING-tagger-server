@@ -6,7 +6,6 @@ import flask
 from flask import Flask
 from flask import request, current_app, json
 from flask.json import JSONEncoder
-import optparse
 import time
 import sys, getopt, io
 import csv
@@ -170,11 +169,8 @@ def annotate_post():
 # -----------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    parser = optparse.OptionParser(usage="python server.py -p ")
-    parser.add_option('-p', '--port', action='store', dest='port', help='The port to listen.')
+    parser = argparse.ArgumentParser(description='Annotate mentions in text of proteins, subcellular localizations, and organisms')
+    parser.add_argument('--port', '-p', type=int, required=True, default=5000, help='The port for the REST server to listen to.')
     (args, _) = parser.parse_args()
-    if args.port == None:
-        print("Missing required argument: -p/--port")
-        sys.exit(1)
 
-    app.run(host='0.0.0.0', port=int(args.port), debug=False)
+    app.run(host='0.0.0.0', port=args.port, debug=False)
