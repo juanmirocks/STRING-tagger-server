@@ -27,8 +27,8 @@ REVIEWED_UNIPROT_2_STRING_DATE = '04_2015'
 tagger = Tagger()
 
 # loads the corresponding data
-tagger.load_global("dics/tagger_global.tsv")
-tagger.load_names("dics/tagger_entities.tsv", "dics/tagger_names.tsv")
+tagger.load_global("tagger_dics/tagger_global.tsv")
+tagger.load_names("tagger_dics/tagger_entities.tsv", "tagger_dics/tagger_names.tsv")
 
 # -----------------------------------------------------------------------------------
 
