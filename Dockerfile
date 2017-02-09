@@ -2,6 +2,7 @@ FROM larsjuhljensen/tagger
 
 LABEL version="1.0.0"
 LABEL authors="Juan Miguel Cejuela (@juanmirocks)"
+LABEL description="Dockerized REST server out of larsjuhljensen's (STRING) tagger"
 
 #
 # Basic
