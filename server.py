@@ -80,7 +80,7 @@ def annotate():
     if not text:
         raise AssertionError("The text to tag must be provided")
 
-    matches = tagger.get_matches(text, document_id_stub, ids, auto_detect, protect_tags=False)
+    matches = tagger.get_matches(text, document_id_stub, ids, auto_detect=auto_detect, protect_tags=False)
 
     if output == "simple":
         raise NotImplementedError
