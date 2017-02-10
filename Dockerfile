@@ -1,11 +1,14 @@
-# Base container while inheriting work from larsjuhljensen/tagger#
-# VERSION       1
-# For testing: "worm_dictionary.tar.gz", "tagger_dictionary.tar.gz"
-
 FROM larsjuhljensen/tagger
-LABEL authors="Juan Miguel Cejuela (@juanmirocks), Shpend Mahmuti (shpendmahmuti@gmail.com)"
 
-# RUN yum -y update -- This line it shows problems in some versions of docker 
+LABEL version="1.0.0"
+LABEL authors="Juan Miguel Cejuela (@juanmirocks)"
+LABEL description="Dockerized REST server out of larsjuhljensen's (STRING) tagger"
+
+#
+# Basic
+#
+
+# RUN yum -y update -- This line shows problems in some versions of docker
 RUN yum -y install wget && \
 	yum -y install tar && \
 	yum clean all
@@ -14,31 +17,41 @@ RUN yum -y install wget && \
 RUN yum -y install epel-release && yum clean all
 RUN yum -y install python-pip && yum clean all
 
-WORKDIR /app/tagger/
+ENV TAGGER_DIR="/app/tagger"
 
-# pip install app requirements
-COPY requirements.txt /app/tagger/.
-RUN pip install -r /app/tagger/requirements.txt
-RUN pip install --upgrade pip
+#
+# Download first all dictionaries: this is slow, therefore last images should have them already for speedier developing
+#
 
-ENV DICS_NAME="tagger_dictionary.tar.gz"
-ENV DICS_URL="http://download.jensenlab.org/$DICS_NAME"
-ENV DICS_DIR="/app/tagger/dics/"
+ENV TAGGER_DICS_NAME="tagger_dictionary.tar.gz"
+ENV TAGGER_DICS_URL="http://download.jensenlab.org/$TAGGER_DICS_NAME"
+ENV TAGGER_DICS_DIR="${TAGGER_DIR}/tagger_dics/"
+RUN mkdir -p ${TAGGER_DICS_DIR}
+WORKDIR ${TAGGER_DICS_DIR}
+RUN wget ${TAGGER_DICS_URL}
+RUN tar xvzf *.tar.gz
 
-RUN mkdir -p ${DICS_DIR}
-RUN wget ${DICS_URL}
-RUN tar xvzf ${DICS_NAME} -C dics/
-
-# download all directories for uniprot id mapping
-WORKDIR /app/tagger/
-COPY links.txt /app/tagger/.
-RUN wget -c -i /app/tagger/links.txt
+# Dictionaries for stringID to uniprotID mapping
+ENV MAPPING_DICS_DIR="${TAGGER_DIR}/mapping_dics/"
+WORKDIR ${MAPPING_DICS_DIR}
+COPY mapping_files_urls.txt .
+RUN wget -c -i mapping_files_urls.txt
 RUN gunzip *.gz
 
-COPY server.py ${WORKDIR}
-COPY test_server.py ${WORKDIR}
+#
+# Now install the app
+#
+
+WORKDIR ${TAGGER_DIR}
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+COPY server.py .
+COPY test_server.py .
+
+# RUN python test_server.py
 
 EXPOSE 5000
 ENTRYPOINT ["python"]
 CMD ["server.py", "-p 5000"]
-# CMD ["test_server.py"]

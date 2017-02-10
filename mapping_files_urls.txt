@@ -7,4 +7,3 @@ http://www.string-db.org/mapping_files/uniprot_mappings/6239_reviewed_uniprot_2_
 http://www.string-db.org/mapping_files/uniprot_mappings/7227_reviewed_uniprot_2_string.04_2015.tsv.gz
 http://www.string-db.org/mapping_files/uniprot_mappings/7955_reviewed_uniprot_2_string.04_2015.tsv.gz
 http://www.string-db.org/mapping_files/uniprot_mappings/9606_reviewed_uniprot_2_string.04_2015.tsv.gz
-http://www.string-db.org/mapping_files/uniprot_mappings/full_uniprot_2_string.04_2015.tsv.gz
