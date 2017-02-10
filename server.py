@@ -40,13 +40,13 @@ def parse_mapping_dics():
     return ret
 
 
-def init():
+def init(is_develop):
     global TAGGER
     global MAPPING_DICS
 
     TAGGER = Tagger()
 
-    if app.debug:
+    if is_develop:
         # Keep for quick development as the tagger dictionaries take much time to load
         TAGGER.add_name("p53", 9606, "ENSP00000269305")
         TAGGER.add_name("p53", 9606, "ENSP00000269305-non-mappable")
@@ -125,7 +125,7 @@ def annotate():
     ids = request.json.get('ids', request.args.get('ids', '9606,-22,-3'))
     ids = {int(x) for x in ids.split(",")}
     auto_detect = request.json.get('autodetect', request.args.get('autodetect', 'true'))
-    auto_detect = bool(auto_detect.lower())
+    auto_detect = auto_detect if isinstance(auto_detect, bool) else bool(auto_detect.lower())
     output = request.json.get('output', request.args.get('output', 'simple'))
     document_id_stub = "1"
     unicode_text = request.json.get('text', request.args.get('text', None))
@@ -156,6 +156,10 @@ if __name__ == '__main__':
     parser.add_argument('--debug', '-d', required=False, default=False, action="store_true", help='Run in debug mode')
     args = parser.parse_args()
 
-    init()
+    print()
+    print("Web server, arguments: ", args)
+    print()
+
+    init(is_develop=args.debug)
 
     app.run(host='0.0.0.0', port=args.port, debug=args.debug, threaded=True)
