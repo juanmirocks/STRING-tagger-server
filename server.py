@@ -77,7 +77,7 @@ def ascii2unicode_offset_mappings(unicode_text):
     return offsets
 
 
-def tagger2simple(tagger_output, unicode_text):
+def tagger2simple(tagger_output, unicode_text, include_texts):
     offsets = ascii2unicode_offset_mappings(unicode_text)
 
     ret = []
@@ -107,7 +107,12 @@ def tagger2simple(tagger_output, unicode_text):
             else:
                 mapped_norms.append({"type": str(typ), "id": norm_id})
 
-        ret.append({"start": start, "end": end, "ids": mapped_norms})
+        entity = {"start": start, "end": end, "ids": mapped_norms}
+
+        if include_texts:
+            entity["text"] = unicode_text[start:end]
+
+        ret.append(entity)
 
     return ret
 
@@ -137,7 +142,10 @@ def annotate():
     matches = TAGGER.get_matches(ascii_text, document_id_stub, entity_types=ids, auto_detect=auto_detect, allow_overlap=False, protect_tags=False)
 
     if output == "simple":
-        return flask.jsonify(tagger2simple(matches, unicode_text))
+        return flask.jsonify(tagger2simple(matches, unicode_text, include_texts=False))
+
+    elif output == "full":
+        return flask.jsonify(tagger2simple(matches, unicode_text, include_texts=True))
 
     elif output == "tagger-unicode":  # with unicode, character-based offsets
         offsets = ascii2unicode_offset_mappings(unicode_text)
