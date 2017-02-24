@@ -55,6 +55,11 @@ def init(is_develop):
     else:
         TAGGER.load_global("tagger_dics/tagger_global.tsv")
         TAGGER.load_names("tagger_dics/tagger_entities.tsv", "tagger_dics/tagger_names.tsv")
+        # Hand pick: allow "Golgi" (considered a safe term to mean "Golgi apparatus")
+        state = TAGGER.allow_name("Golgi", None)
+        # Hand picks
+        # state = TAGGER.allow_name("chromosome", None)
+        # state = TAGGER.allow_name("chromosomes", None)
 
     MAPPING_DICS = parse_mapping_dics()
 
