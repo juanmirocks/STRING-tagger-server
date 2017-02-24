@@ -11,6 +11,7 @@
     * original image expects big batches and thus ignores the initial time-consuming operation such as loading of the heavy dictionaries,
     * this new image loads the dictionaries through the REST API web server only once and keeps them in memory
   * **Mapping of STRING ids to UniProt ids**
+  * Supports **Unicode**
   * Response in **JSON format**
 
 
