@@ -15,51 +15,47 @@
   * Response in **JSON format**
 
 
-# Required software
+# Prerequisites
 
-0. Install docker from [docker website](https://docs.docker.com/engine/installation/)
-0. Check with `docker info` the ammount of runtime memory. Our version requires 4GB to run but, for example, Docker for Mac is set to use 2 GB runtime memory by default. This can be changed following these [instructions](https://docs.docker.com/docker-for-mac/).
-0. Check whether it is working by following their instructions (simple tests needed)
-0. (optionally) on Linux, create an admin terminal in order to avoid giving permissions all the time (simplifies the work)
-0. For docker related commands, you can refer to the following [docker cheat sheet](https://github.com/wsargent/docker-cheat-sheet)
+1. [Install docker](https://docs.docker.com/engine/installation/) (for help, refer to this [docker cheat sheet](https://github.com/wsargent/docker-cheat-sheet))
+1. Check with `docker info` the amount of runtime memory. Our version requires 4GB to run but, for example, Docker for Mac is set to use 2 GB runtime memory by default. This can be changed following these [instructions](https://docs.docker.com/docker-for-mac/).
 
 
 # Installation & Running
 
-0. Clone this repository: git clone https://github.com/juanmirocks/STRING-tagger-server.git
-0. Go to the corresponding dictionary where the Dockerfile is present
-0. Build the image from the Dockerfile: `docker build -t tagger .`
-0. Run the docker container: `docker run -p 5000:5000 tagger` (uses STRING dictionaries)
-0. (optionally) run with your dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
-0. Check whether the server is running: `localhost:5000/ should display a 'Wellcome' message`
+1. Clone this repository: `git clone https://github.com/juanmirocks/STRING-tagger-server.git`
+1. `cd` to the created folder
+1. Build the image from the Dockerfile: `docker build -t tagger .`
+1. Run the docker container: `docker run -p 5000:5000 tagger` (uses STRING dictionaries)
+  * (optionally) run with your dictionaries: `docker run -p 5000:5000 -v ${your_dics_folder}:/app/tagger/dics tagger`
+1. Check whether the server is running: `localhost:5000/ should display a 'Welcome' message`
 
 
 # Supported organisms and their [taxonomy ids](http://www.uniprot.org/taxonomy/)
 
 Proteins are tagged for these organisms:
 
-0. Homo sapiens(Human) with taxonomy id: **9606**
-0. Arabidopsis thaliana(Mouse-ear cress) with taxonomy id: **3702**
-0. Saccharomyces cerevisiae (Baker's yeast) with taxonomy id: **4932**
-0. Mus musculus(Mouse) with taxonomy id: **10090**
-0. Schizosaccharomyces pombe (Fission yeast) with taxonomy id: **4896**
-0. Escherichia coli str. K-12 substr. MG1655 with taxonomy id: **511145**
-0. Caenorhabditis elegans with taxonomy id: **6239**
-0. Drosophila melanogaster (Fruit fly) with taxonomy id: **7227**
-0. Danio rerio (Zebrafish) (Brachydanio rerio) with taxonomy id: **7955**
-0. Rattus norvegicus (Rat) with taxonomy id: **10116** (*currently there is no file for conversion to uniprot Id for this organism*)
+1. Homo sapiens (Human), with NCBI Taxonomy ID: **9606**
+1. Arabidopsis thaliana (Mouse-ear cress): **3702**
+1. Saccharomyces cerevisiae (Baker's yeast): **4932**
+1. Mus musculus (Mouse): **10090**
+1. Schizosaccharomyces pombe (Fission yeast): **4896**
+1. Escherichia coli str. K-12 substr. MG1655: **511145**
+1. Caenorhabditis elegans: **6239**
+1. Drosophila melanogaster (Fruit fly): **7227**
+1. Danio rerio (Zebrafish) (Brachydanio rerio): **7955**
+1. Rattus norvegicus (Rat): **10116** (*currently there is no file for conversion to uniprot Id for this organism*)
 
 
-## Sample Runs
+# Parameters
 
 Parameters used when sending a post request:
 
 * **ids**:
-  * -22: used to tag subcellular localization and gives as a response a *GO ID*.
-  * -3: used to tag organism names and gives as a response *TAXONOMY ID*.
-  * taxonomy id (example `9606`): used to tag proteins for the specified taxonomy id and gives as a response *STRING ID* and *UNIPROT ID*.
-* **text**:
-  * text that is used for tagging (example: `tp53 mouse`)
+  * -22: used to tag subcellular localization, normalized (linked) to *GO ID*.
+  * -3: used to tag organism names, normalized to *TAXONOMY ID*.
+  * taxonomy id (example `9606`): used to tag proteins for the specified taxonomy id, normalized to *STRING ID* and *UNIPROT ID*.
+
 * **autodetect**:
   * *True*:
     * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID for mouse, even if taxonomy id for mouse is not included in the *ids* parameter.
@@ -68,27 +64,27 @@ Parameters used when sending a post request:
     * When text is `tp53 mouse`, then it returns the STRING ID and UNIPROT ID only for the specified taxonomy id in the *ids* parameter even though `mouse` is included in the *text*.
     * When text is given as `tp53`, then it returns the *STRING ID* and *UNIPROT ID* only for the specified taxonomy id in the *ids* parameter, so it gives the same response as in the previous case.
 
-The default parameters annotate subcellular localization and all organisms' proteins:
+* **text**:
+  * text to tag (example: `tp53 mouse`)
+
+* **output**:
+  * choose between (not documented): `simple` (default), `full`, `tagger-unicode`, `tagger-raw`
+
+The default parameters annotate subcellular localization and all organisms' proteins found in the text, always tagging humans' proteins:
 
 * `ids=-22, 9606`
 * `autodetect=True`
 
 
-Examples:
+### Sample Runs:
 
 ```shell
 
-# Run with default ids and default autodetect
-curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate/post -d '{"text":"Brachydanio rerio or danio rerio have aldh9a1a and ab-cb8"}'
+curl -H "Content-type: application/json" -X POST http://127.0.0.1:5000/annotate -d '{"text":"Brachydanio rerio or danio rerio have aldh9a1a and ab-cb8"}'
 
-# Specify ids and autodetect=False
-curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False","text":"p53 mouse tp53"}'
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate -d '{"ids":"-22,10090","text":"p53"}'
 
-# Specify ids and autodetect=False
-curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,9606","autodetect":"False","text":"Dnm1p, which assembles on the mitochondrial outer membrane into punctate structures associated with sites of membrane [... in yeast]"}'
-
-# Specify ids (and default autodetect=True)
-curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate/post -d '{"ids":"-22,10090","text":"p53"}'
+curl -i -H "Content-Type: application/json" -X POST http://localhost:5000/annotate -d '{"ids":"-22,9606","autodetect":"False","text":"p53 mouse tp53"}'
 ```
 
 

@@ -33,7 +33,7 @@ class SimpleTest(unittest.TestCase):
         self.assertEquals(response.status_code, 404)  # does not exist
 
     #
-    # All following predictions tests must be written anew
+    # All following predictions tests must be re-written
     #
 
     # # test when we provide only text
