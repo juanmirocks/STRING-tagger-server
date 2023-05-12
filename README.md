@@ -1,3 +1,8 @@
+This project contains useful logic but is no longer maintained. In particular, as of 2023-05-12, [the docker image `larsjuhljensen/tagger`](https://hub.docker.com/r/larsjuhljensen/tagger/) does not exist and the [referenced dictionary URLs](mapping_files_urls.txt) do not exist either.
+
+[For the latest developments, 👉 check the official STRING tagger repository](https://github.com/larsjuhljensen/tagger)
+
+
 # STRING-tagger-server
 
 [STRING tagger](https://bitbucket.org/larsjuhljensen/tagger) **dockerized** as a **REST API**.
